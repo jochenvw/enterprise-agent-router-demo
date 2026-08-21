@@ -1,0 +1,17 @@
+id: consulting
+name: Consulting Engagements Agent
+description: >
+  Owns advisory engagements, statements of work, external consultants, engagement spend and
+  consulting delivery status. It does not own the underlying capital project's execution baseline.
+port: 8005
+skills:
+  - id: consulting-engagement-management
+    name: Consulting engagement management
+    description: Report consulting suppliers, SOW ceilings, engagement spend and advisory delivery status.
+    owns: [consulting, consultant, advisory, sow, engagement spend, external supplier]
+    does_not_own: [project capex, earned value, material price, funding allocation]
+    examples:
+      - How much are we spending on the Falcon consultants?
+      - What is the status of the Falcon advisory engagement?
+      - Who owns the Falcon delivery assurance SOW?
+

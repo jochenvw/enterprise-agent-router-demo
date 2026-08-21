@@ -1,0 +1,16 @@
+id: project-controls
+name: Project Controls Agent
+description: >
+  Owns approved baselines, schedules, earned value, actual expenditure, cost variance and
+  estimate-at-completion for capital projects. It does not own funding approval or vendor unit prices.
+port: 8002
+skills:
+  - id: cost-performance-analysis
+    name: Cost performance analysis
+    description: Explain baseline, actual cost, earned value, variance and estimate-at-completion.
+    owns: [eac, estimate at completion, baseline, actual cost, project cost, cost gone up, earned value, cost variance, schedule variance]
+    does_not_own: [funding approval, capital allocation, vendor price, purchase order, consulting sow]
+    examples:
+      - Why is Project Falcon over budget?
+      - What is Falcon's estimate at completion?
+      - Show cost variance for Falcon.

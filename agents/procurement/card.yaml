@@ -1,0 +1,16 @@
+id: procurement
+name: Materials and Procurement Agent
+description: >
+  Owns material orders, equipment, purchase orders, vendors, delivery dates and supplier pricing.
+  It does not own project baselines, total CAPEX funding or consulting engagements.
+port: 8003
+skills:
+  - id: material-and-vendor-pricing
+    name: Material and vendor pricing
+    description: Answer questions about equipment prices, suppliers, purchase orders and delivery.
+    owns: [material, equipment, compressor, vendor, supplier, siemens, purchase order, price, paid, delivery, delivered]
+    does_not_own: [project baseline, eac, funding approval, portfolio, consultant]
+    examples:
+      - What did we pay Siemens for the Falcon compressor?
+      - When will the Falcon compressor be delivered?
+      - Who is the awarded Falcon equipment vendor?

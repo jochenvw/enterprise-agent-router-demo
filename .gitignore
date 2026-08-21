@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.env
+registry/index.json
+registry/agents.azure.yaml
+/context/
+
+# Deployment-instance artifacts (resource names, connection strings, subscription details)
+.azure/
+infra/.deployment-outputs.json
+infra/main.json

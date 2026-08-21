@@ -1,0 +1,23 @@
+- query: What is the EAC for Falcon?
+  expected_agent: project-controls
+- query: Why has the project cost gone up?
+  expected_agent: project-controls
+- query: Has funding been approved for Falcon?
+  expected_agent: investment-planning
+- query: What did we pay Siemens for the Falcon compressor?
+  expected_agent: procurement
+- query: When will the Falcon compressor be delivered?
+  expected_agent: procurement
+- query: How much are we spending on the Falcon consultants?
+  expected_agent: consulting
+- query: Who owns the Falcon delivery assurance SOW?
+  expected_agent: consulting
+- query: What CAPEX was sanctioned for Falcon?
+  expected_agent: capital-projects
+- query: When is Falcon mechanical completion?
+  expected_agent: capital-projects
+- query: What's the status of Falcon?
+  clarification_required: true
+- query: What's the forecast for Project Falcon?
+  clarification_required: true
+

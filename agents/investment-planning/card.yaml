@@ -1,0 +1,16 @@
+id: investment-planning
+name: Investment Planning Agent
+description: >
+  Owns portfolio allocation, business cases, capital-plan funding and investment decisions.
+  It does not own project delivery variance, procurement pricing or consulting SOW performance.
+port: 8004
+skills:
+  - id: portfolio-funding
+    name: Portfolio funding and business cases
+    description: Explain funding approval, portfolio priority, allocation and investment-case economics.
+    owns: [funding, approved, budget, allocation, capital plan, portfolio, business case, npv, investment decision]
+    does_not_own: [cost variance, earned value, purchase order, vendor price, consulting sow]
+    examples:
+      - Has funding been approved for Falcon?
+      - Where does Falcon rank in the portfolio?
+      - What is the NPV in Falcon's business case?

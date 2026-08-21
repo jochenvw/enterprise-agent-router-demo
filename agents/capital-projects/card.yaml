@@ -1,0 +1,16 @@
+id: capital-projects
+name: Capital Projects Agent
+description: >
+  Owns sanctioned capital projects, overall execution status, major milestones and approved CAPEX.
+  It does not explain earned-value variance, vendor pricing, portfolio funding decisions or consulting SOWs.
+port: 8001
+skills:
+  - id: sanctioned-project-status
+    name: Sanctioned project status
+    description: Report overall execution state, stage gates and major milestones for sanctioned projects.
+    owns: [sanctioned project, execution status, milestone, mechanical completion, completion, capex]
+    does_not_own: [earned value, cost variance, vendor price, funding allocation, consulting sow]
+    examples:
+      - What execution stage is Project Falcon in?
+      - When is Falcon mechanical completion?
+      - What CAPEX was sanctioned for Falcon?

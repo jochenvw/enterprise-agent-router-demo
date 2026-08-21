@@ -91,7 +91,11 @@ only), A2A time, and token counts (reasoning only) — these are timed separatel
 overall time = sum of the three phases, visible in every CLI trace
 (`try-orchestrator.ps1`).
 
-## Diagram shape
+## Diagram
+
+![Architecture diagram](architecture-diagram.png)
+
+## Diagram shape (ASCII fallback)
 
 ```
 Agent Cards (5x YAML)

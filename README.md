@@ -49,3 +49,9 @@ APPLICATIONINSIGHTS_CONNECTION_STRING
 Authentication uses `DefaultAzureCredential`; use managed identity in Azure. Without Azure configuration, the demo uses a persisted local capability index with lexical plus deterministic vector scoring.
 
 The specialist agents are intentionally deterministic. The intelligence under test is capability discovery, ambiguity handling, and delegation—not five independent RAG systems.
+
+## Documentation
+
+- [`docs/infra-deployment.md`](docs/infra-deployment.md) — Azure infrastructure deployment, cost estimates, cleanup
+- [`docs/performance.md`](docs/performance.md) — performance setup/reproduction and headline numbers
+- [`docs/perf-journal.md`](docs/perf-journal.md) — full performance experiment log (methodology, root-cause analysis, before/after measurements)

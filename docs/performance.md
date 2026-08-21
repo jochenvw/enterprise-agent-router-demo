@@ -1,8 +1,8 @@
 # Performance results
 
 Setup and reproduction only. Full experiment log with methodology, root-cause analysis,
-and per-experiment before/after numbers lives in [`perf_journal.md`](perf_journal.md).
-Architecture and demo usage: [`README.md`](README.md). Azure deployment: [`infra/README.md`](infra/README.md).
+and per-experiment before/after numbers lives in [`perf-journal.md`](perf-journal.md).
+Architecture and demo usage: [`../README.md`](../README.md). Azure deployment: [`infra-deployment.md`](infra-deployment.md).
 
 ## Reproduce
 
@@ -35,5 +35,5 @@ uv run eval-router
 | Overall time / query | ~1.0 s | ~4.6 s |
 | Tokens / query | 0 | ~484 |
 
-See `perf_journal.md` for the full breakdown (AI Search / Reasoning / A2A split, cold-start
+See `perf-journal.md` for the full breakdown (AI Search / Reasoning / A2A split, cold-start
 analysis, and why the default path is retrieval + rules rather than agentic reasoning).

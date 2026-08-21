@@ -6,7 +6,7 @@ param(
 
 # Runs all 10 demo queries inside a single Python process (route-query-batch) so the
 # ~2s per-process cold start (Azure AD token acquisition + Azure OpenAI client init) is
-# paid once for the whole batch instead of once per query. See perf_journal.md, Experiment 4.
+# paid once for the whole batch instead of once per query. See docs/perf-journal.md, Experiment 4.
 
 $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path $PSScriptRoot -Parent

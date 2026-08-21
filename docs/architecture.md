@@ -120,6 +120,7 @@ User --> Orchestrator --(deterministic rerank)--+
 
 ## Related docs
 
+- [`docs/multihop-example-run.md`](multihop-example-run.md) — verbatim example run of Flow B
 - [`docs/demos.md`](demos.md) — demo scenarios and commands
 - [`docs/infra-deployment.md`](infra-deployment.md) — deployment and cleanup
 - [`docs/performance.md`](performance.md) — performance repro and headline numbers

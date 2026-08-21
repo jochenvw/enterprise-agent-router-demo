@@ -64,6 +64,8 @@ Output shows: `[Decompose]` (query split into 2 sub-questions) → per-hop `[Hop
 against two different specialist agents → `[Synthesize]` (combined answer) → performance
 summary. Typical cost: ~13s overall, ~450-670 reasoning tokens.
 
+See [`docs/multihop-example-run.md`](multihop-example-run.md) for a verbatim example run.
+
 ## 5. Batch/regression run
 
 Fires a fixed set of similarly-phrased queries and shows how they route to different agents,

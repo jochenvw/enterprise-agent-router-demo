@@ -52,6 +52,7 @@ The specialist agents are intentionally deterministic. The intelligence under te
 
 ## Documentation
 
+- [`docs/demos.md`](docs/demos.md) — demo scenarios: single-hop routing, ambiguity/clarification, forced reasoning, multi-hop contrast/compare, batch and eval runs
 - [`docs/infra-deployment.md`](docs/infra-deployment.md) — Azure infrastructure deployment, cost estimates, cleanup
 - [`docs/performance.md`](docs/performance.md) — performance setup/reproduction and headline numbers
 - [`docs/perf-journal.md`](docs/perf-journal.md) — full performance experiment log (methodology, root-cause analysis, before/after measurements)

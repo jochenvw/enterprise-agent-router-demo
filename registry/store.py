@@ -128,9 +128,14 @@ class AzureSearchCapabilityStore:
     def search(
         self, query: str, embedding: list[float], top: int = 5
     ) -> list[tuple[CapabilityDocument, float]]:
+        # Retrieve a wider candidate pool than `top` before reranking: the ownership/boundary
+        # rerank can promote a document that Azure AI Search's raw hybrid score ranked below
+        # `top`, so truncating before rerank could silently drop the correct agent. See
+        # docs/perf-journal.md, Experiment 11.
+        fetch_top = max(top * 4, 20)
         vector_query = VectorizedQuery(
             vector=embedding,
-            k_nearest_neighbors=top,
+            k_nearest_neighbors=fetch_top,
             fields="embedding",
         )
         results = self.search_client.search(
@@ -151,7 +156,7 @@ class AzureSearchCapabilityStore:
                 "base_url",
                 "agent_card_json",
             ],
-            top=top,
+            top=fetch_top,
         )
         output = []
         for result in results:
@@ -161,10 +166,11 @@ class AzureSearchCapabilityStore:
             payload["search_score"] = score
             output.append((CapabilityDocument.model_validate(payload), score))
         maximum = max((score for _, score in output), default=1.0) or 1.0
-        return [
+        reranked = [
             (document, math.tanh(score / maximum) + _ownership_rerank(query, document))
             for document, score in output
         ]
+        return sorted(reranked, key=lambda item: item[1], reverse=True)[:top]
 
 
 def create_store(dimensions: int) -> CapabilityStore:

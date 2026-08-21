@@ -8,8 +8,8 @@ skills:
   - id: material-and-vendor-pricing
     name: Material and vendor pricing
     description: Answer questions about equipment prices, suppliers, purchase orders and delivery.
-    owns: [material, equipment, compressor, vendor, supplier, siemens, purchase order, price, paid, delivery, delivered]
-    does_not_own: [project baseline, eac, funding approval, portfolio, consultant]
+    owns: [material, equipment, compressor, vendor, supplier, siemens, purchase order, price, paid, delivery date, delivered]
+    does_not_own: [project baseline, eac, funding approval, portfolio, consultant, delivery assurance]
     examples:
       - What did we pay Siemens for the Falcon compressor?
       - When will the Falcon compressor be delivered?

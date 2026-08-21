@@ -5,6 +5,12 @@ import os
 import time
 
 from orchestrator.delegation import delegate, delegate_verbose
+from orchestrator.multihop import (
+    SubQueryResult,
+    decompose_query,
+    looks_multi_hop,
+    synthesize_answer,
+)
 from orchestrator.reasoning import ReasoningResult, reason_over_candidates
 from orchestrator.router import CapabilityRouter
 from registry.embeddings import create_embedder
@@ -19,6 +25,102 @@ async def run(query: str, should_delegate: bool, verbose: bool, force_reasoning:
 
 
 async def run_query(
+    router: CapabilityRouter,
+    query: str,
+    should_delegate: bool,
+    verbose: bool,
+    force_reasoning: bool,
+) -> int:
+    if should_delegate and looks_multi_hop(query):
+        return await run_multi_hop_query(router, query, verbose)
+    return await run_single_hop_query(router, query, should_delegate, verbose, force_reasoning)
+
+
+async def run_multi_hop_query(router: CapabilityRouter, query: str, verbose: bool) -> int:
+    """Decompose a compound query, route + delegate each part independently, then
+    synthesize one combined answer. This is the genuinely agentic path: no lexical/vector
+    score or ownership rule can split "contrast X with Y" or merge two agents' answers."""
+    total_start = time.perf_counter()
+    if verbose:
+        print("=== Agent Routing Demo (multi-hop) ===")
+        print(f"Query: {query}")
+        print("\n[Decompose] Query looks compound; asking reasoning model to split it...")
+    sub_queries, decompose_ms, decompose_in, decompose_out = decompose_query(query)
+    if verbose:
+        print(f"[Decompose] Completed in {decompose_ms:.0f} ms -> {len(sub_queries)} sub-queries:")
+        for index, sub_query in enumerate(sub_queries, start=1):
+            print(f"  {index}. {sub_query}")
+
+    results: list[SubQueryResult] = []
+    search_ms_total = 0.0
+    a2a_ms_total = 0.0
+    for sub_query in sub_queries:
+        if verbose:
+            print(f"\n[Hop] Routing sub-query: {sub_query}")
+        search_start = time.perf_counter()
+        decision = router.route(sub_query)
+        search_ms_total += (time.perf_counter() - search_start) * 1000
+        if decision.selected is None:
+            if verbose:
+                print(f"[Hop] Clarification required: {decision.clarification}")
+            results.append(SubQueryResult(sub_query, None, None, decision.clarification))
+            continue
+        agent_id = decision.selected.document.agent_id
+        if verbose:
+            print(f"[Hop] Selected {decision.selected.document.agent_name} ({agent_id})")
+        a2a_start = time.perf_counter()
+        answer = (
+            await delegate_verbose(decision.selected.document, sub_query)
+            if verbose
+            else await delegate(decision.selected.document, sub_query)
+        )
+        a2a_ms_total += (time.perf_counter() - a2a_start) * 1000
+        results.append(SubQueryResult(sub_query, agent_id, answer))
+
+    if verbose:
+        print("\n[Synthesize] Combining sub-answers into one response...")
+    combined, synth_ms, synth_in, synth_out = synthesize_answer(query, results)
+    reasoning_ms = decompose_ms + synth_ms
+    input_tokens = decompose_in + synth_in
+    output_tokens = decompose_out + synth_out
+
+    if verbose:
+        print(f"[Synthesize] Completed in {synth_ms:.0f} ms")
+        print(f"\n[Combined answer] {combined}")
+
+    payload = {
+        "outcome": "multi-hop",
+        "sub_queries": sub_queries,
+        "hops": [
+            {
+                "sub_query": result.sub_query,
+                "agent": result.agent_id,
+                "answer": result.answer,
+                "clarification": result.clarification,
+            }
+            for result in results
+        ],
+        "combined_answer": combined,
+    }
+    if verbose:
+        measured_total_ms = (time.perf_counter() - total_start) * 1000
+        accounted_total_ms = search_ms_total + reasoning_ms + a2a_ms_total
+        print("\n[Performance]")
+        print(f"  Overall time: {accounted_total_ms:.0f} ms")
+        print(f"  AI Search time (all hops): {search_ms_total:.0f} ms")
+        print(f"  Reasoning time (decompose + synthesize): {reasoning_ms:.0f} ms")
+        print(f"  A2A time (all hops): {a2a_ms_total:.0f} ms")
+        print(f"  Uninstrumented overhead: {max(0.0, measured_total_ms - accounted_total_ms):.0f} ms")
+        print("\n[Reasoning tokens]")
+        print(f"  Input tokens: {input_tokens}")
+        print(f"  Output tokens: {output_tokens}")
+        print(f"  Total tokens: {input_tokens + output_tokens}")
+        print("\n[Summary]")
+    print(json.dumps(payload, indent=2))
+    return 0
+
+
+async def run_single_hop_query(
     router: CapabilityRouter,
     query: str,
     should_delegate: bool,

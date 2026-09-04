@@ -67,4 +67,3 @@ class CapabilityRouter:
             span.set_attribute("routing.outcome", "delegated")
             span.set_attribute("routing.clarification_required", False)
             return RoutingDecision("delegate", top_candidate, candidates)
-

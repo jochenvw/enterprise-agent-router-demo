@@ -55,4 +55,3 @@ def test_routes_specific_query(tmp_path: Path) -> None:
 def test_clarifies_generic_status(tmp_path: Path) -> None:
     decision = build_index(tmp_path / "index.json").route("What's the status of Falcon?")
     assert decision.outcome == "clarify"
-

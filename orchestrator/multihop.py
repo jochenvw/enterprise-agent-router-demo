@@ -12,7 +12,7 @@ Experiment 10, for measurements and the reasoning-vs-fast-path framing this buil
 import json
 import os
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from azure.identity import DefaultAzureCredential, get_bearer_token_provider
 from openai import AzureOpenAI
@@ -43,21 +43,6 @@ class SubQueryResult:
     agent_id: str | None
     answer: str | None
     clarification: str | None = None
-
-
-@dataclass
-class MultiHopResult:
-    sub_queries: list[str]
-    results: list[SubQueryResult] = field(default_factory=list)
-    combined_answer: str = ""
-    decompose_ms: float = 0.0
-    synthesize_ms: float = 0.0
-    input_tokens: int = 0
-    output_tokens: int = 0
-
-    @property
-    def total_tokens(self) -> int:
-        return self.input_tokens + self.output_tokens
 
 
 def _client() -> tuple[AzureOpenAI, str] | None:
@@ -92,7 +77,7 @@ def decompose_query(query: str) -> tuple[list[str], float, int, int]:
         "never ask for a comparison, contrast, or relationship between facts — that synthesis "
         "happens later, not in a sub-question. "
         "If it is already a single simple question, return it unchanged as the only item. "
-        "Return JSON: {\"sub_queries\": [\"...\", \"...\"]}. "
+        'Return JSON: {"sub_queries": ["...", "..."]}. '
         f"Question: {query}"
     )
     start = time.perf_counter()

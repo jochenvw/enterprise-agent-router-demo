@@ -13,4 +13,3 @@ async def test_project_controls_returns_eac() -> None:
     payload = json.loads(response.text)
     assert payload["agent"] == "project-controls"
     assert "52.4" in payload["answer"]
-

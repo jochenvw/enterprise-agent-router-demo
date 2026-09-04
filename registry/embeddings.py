@@ -67,4 +67,3 @@ def create_embedder() -> Embedder:
     if os.getenv("AZURE_OPENAI_ENDPOINT") and os.getenv("AZURE_OPENAI_EMBEDDING_DEPLOYMENT"):
         return AzureOpenAIEmbedder()
     return HashingEmbedder()
-

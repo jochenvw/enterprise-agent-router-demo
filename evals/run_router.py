@@ -31,9 +31,7 @@ def main() -> None:
         )
         correct += int(passed)
         wrong_delegations += int(
-            not expected_clarification
-            and not actual_clarification
-            and selected != case["expected_agent"]
+            not expected_clarification and not actual_clarification and selected != case["expected_agent"]
         )
         clarification_tp += int(expected_clarification and actual_clarification)
         clarification_fp += int(not expected_clarification and actual_clarification)
@@ -63,4 +61,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

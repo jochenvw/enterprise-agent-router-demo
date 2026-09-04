@@ -1,2 +1,1 @@
 """Shared cross-cutting helpers."""
-

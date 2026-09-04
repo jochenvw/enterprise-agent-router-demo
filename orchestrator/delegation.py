@@ -4,7 +4,7 @@ import httpx
 from a2a.client import A2ACardResolver
 from a2a.types import AgentCard
 from agent_framework.a2a import A2AAgent
-from google.protobuf.json_format import Parse
+from google.protobuf.json_format import Parse, ParseError
 
 from registry.models import CapabilityDocument
 from shared.telemetry import tracer
@@ -15,7 +15,7 @@ def _card_from_document(document: CapabilityDocument) -> AgentCard | None:
         return None
     try:
         return Parse(document.agent_card_json, AgentCard())
-    except Exception:
+    except ParseError:
         return None
 
 

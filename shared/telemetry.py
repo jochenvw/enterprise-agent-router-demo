@@ -16,4 +16,3 @@ def configure_telemetry(service_name: str) -> None:
 
 def tracer() -> trace.Tracer:
     return trace.get_tracer("enterprise-agent-router")
-

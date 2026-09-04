@@ -8,6 +8,7 @@ from urllib.parse import urlparse
 import httpx
 import yaml
 from a2a.client import A2ACardResolver
+from a2a.types import AgentCard
 from google.protobuf.json_format import MessageToJson
 
 from registry.embeddings import create_embedder
@@ -16,7 +17,7 @@ from registry.store import create_store
 from shared.telemetry import configure_telemetry, tracer
 
 
-async def discover(base_url: str, client: httpx.AsyncClient) -> tuple[object, str]:
+async def discover(base_url: str, client: httpx.AsyncClient) -> tuple[AgentCard, str]:
     resolver = A2ACardResolver(httpx_client=client, base_url=base_url)
     card = await resolver.get_agent_card()
     return card, MessageToJson(card)

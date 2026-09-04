@@ -178,11 +178,7 @@ async def run_single_hop_query(
         print("[Search] Ranked candidate Agent Cards:")
         for index, candidate in enumerate(decision.candidates, start=1):
             document = candidate.document
-            raw = (
-                f"{document.search_score:.4f}"
-                if document.search_score is not None
-                else "n/a"
-            )
+            raw = f"{document.search_score:.4f}" if document.search_score is not None else "n/a"
             print(
                 f"  {index}. {document.agent_name} ({document.agent_id})\n"
                 f"     AI Search score: {raw}; final routing score: {candidate.score:.4f}\n"
@@ -239,9 +235,7 @@ async def run_single_hop_query(
     return 0
 
 
-async def run_batch(
-    queries: list[str], should_delegate: bool, verbose: bool, force_reasoning: bool
-) -> int:
+async def run_batch(queries: list[str], should_delegate: bool, verbose: bool, force_reasoning: bool) -> int:
     """Run several queries against a single embedder/router instance.
 
     Sharing one process amortizes the fixed per-process cold-start cost (Azure AD token
@@ -285,9 +279,7 @@ def main_batch() -> None:
     configure_telemetry("orchestration-agent")
     with open(args.queries_file, encoding="utf-8") as handle:
         queries = [line.strip() for line in handle if line.strip()]
-    raise SystemExit(
-        asyncio.run(run_batch(queries, args.delegate, args.verbose, args.force_reasoning))
-    )
+    raise SystemExit(asyncio.run(run_batch(queries, args.delegate, args.verbose, args.force_reasoning)))
 
 
 if __name__ == "__main__":

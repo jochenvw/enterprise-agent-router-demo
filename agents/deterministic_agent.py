@@ -83,9 +83,7 @@ class DeterministicDomainAgent(BaseAgent):
             return self._run_stream(messages)
         return self._run(messages)
 
-    async def _run(
-        self, messages: str | Message | list[str] | list[Message] | None
-    ) -> AgentResponse:
+    async def _run(self, messages: str | Message | list[str] | list[Message] | None) -> AgentResponse:
         text = self._answer(messages)
         return AgentResponse(messages=[Message(role="assistant", contents=[Content.from_text(text=text)])])
 

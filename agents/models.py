@@ -28,4 +28,3 @@ def load_agent(agent_id: str) -> AgentDefinition:
         choices = ", ".join(sorted(item.parent.name for item in Path(__file__).glob("*/card.yaml")))
         raise ValueError(f"Unknown agent '{agent_id}'. Expected one of: {choices}")
     return AgentDefinition.model_validate(yaml.safe_load(path.read_text(encoding="utf-8")))
-

@@ -12,6 +12,11 @@
       document.documentElement.setAttribute("data-theme", theme);
     })();
   </script>
+  <script>
+    if (!new URLSearchParams(window.location.search).has("scoutTheme")) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  </script>
   <style>
     :root {
       color-scheme: light;
@@ -75,7 +80,7 @@
     .shell { width: min(900px, calc(100% - 32px)); margin: 0 auto; padding: 40px 0 56px; }
     a { color: var(--cp-link); }
     .back { display: inline-block; margin-bottom: 20px; text-decoration: none; }
-    .eyebrow { color: var(--cp-accent); font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
+    .eyebrow { color: var(--cp-success); font-family: Consolas, "Courier New", Courier, monospace; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
     h1 { margin: 8px 0; font-size: clamp(28px, 5vw, 42px); letter-spacing: -0.04em; }
     h2 { margin: 0 0 12px; font-size: 18px; }
     p { line-height: 1.55; }
@@ -86,13 +91,13 @@
       background: var(--cp-surface);
       border: 1px solid var(--cp-border);
       border-radius: 16px;
-      box-shadow: var(--cp-shadow);
+      box-shadow: 0 0 2px var(--cp-border), 0 1px 2px var(--cp-border);
     }
     .wide { grid-column: 1 / -1; }
     .facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
     .fact { padding: 12px; background: var(--cp-surface-soft); border: 1px solid var(--cp-border); border-radius: 0.625rem; }
-    .label { color: var(--cp-text-muted); font-size: 11px; font-weight: 700; text-transform: uppercase; }
-    .value { margin-top: 5px; overflow-wrap: anywhere; font-family: Consolas, "Courier New", Courier, monospace; font-size: 13px; }
+    .label { color: var(--cp-success); font-family: Consolas, "Courier New", Courier, monospace; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+    .value { margin-top: 5px; overflow-wrap: anywhere; color: var(--cp-warning); font-family: Consolas, "Courier New", Courier, monospace; font-size: 13px; }
     .skill { padding: 14px 0; border-top: 1px solid var(--cp-border); }
     .skill:first-of-type { border-top: 0; }
     .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }

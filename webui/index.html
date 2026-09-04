@@ -12,6 +12,11 @@
       document.documentElement.setAttribute("data-theme", theme);
     })();
   </script>
+  <script>
+    if (!new URLSearchParams(window.location.search).has("scoutTheme")) {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  </script>
   <style>
     :root {
       color-scheme: light;
@@ -82,7 +87,8 @@
     .subtitle, .muted { color: var(--cp-text-muted); }
     .eyebrow {
       margin-bottom: 8px;
-      color: var(--cp-accent);
+      color: var(--cp-success);
+      font-family: Consolas, "Courier New", Courier, monospace;
       font-size: 12px;
       font-weight: 700;
       letter-spacing: 0.12em;
@@ -94,7 +100,7 @@
       background: var(--cp-surface);
       border: 1px solid var(--cp-border);
       border-radius: 16px;
-      box-shadow: var(--cp-shadow);
+      box-shadow: 0 0 2px var(--cp-border), 0 1px 2px var(--cp-border);
     }
     .query-panel { padding: 20px; margin-bottom: 20px; }
     .query-row { display: grid; grid-template-columns: 1fr auto; gap: 12px; }
@@ -144,23 +150,23 @@
     .metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
     .metric { padding: 14px; background: var(--cp-surface-soft); border: 1px solid var(--cp-border); border-radius: 0.625rem; }
     .metric-label { color: var(--cp-text-muted); font-size: 12px; }
-    .metric-value { margin-top: 4px; font-family: Consolas, "Courier New", Courier, monospace; font-size: 16px; font-weight: 700; }
+    .metric-value { margin-top: 4px; color: var(--cp-warning); font-family: Consolas, "Courier New", Courier, monospace; font-size: 16px; font-weight: 700; }
     .outcome { display: inline-flex; padding: 5px 9px; margin-bottom: 14px; border-radius: 0.625rem; background: var(--cp-accent-soft); color: var(--cp-accent); font-size: 12px; font-weight: 700; text-transform: uppercase; }
     .section-heading { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
     .agent-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
     .agent-card { position: relative; padding: 18px; transition: border-color 150ms ease, transform 150ms ease; }
-    .agent-card.selected { border: 2px solid var(--cp-accent); transform: translateY(-3px); background: var(--cp-panel-strong); }
+    .agent-card.selected { border: 2px solid var(--cp-accent); transform: translateY(-3px); background: var(--cp-panel-strong); box-shadow: 0 0 0 3px var(--cp-accent-soft); }
     .selected-label { display: none; position: absolute; top: 12px; right: 12px; padding: 4px 7px; border-radius: 0.625rem; color: var(--cp-accent-fg); background: var(--cp-accent); font-size: 10px; font-weight: 700; text-transform: uppercase; }
     .selected .selected-label { display: block; }
     .agent-description { min-height: 58px; color: var(--cp-text-muted); font-size: 13px; line-height: 1.45; }
-    .label { margin: 14px 0 6px; color: var(--cp-text-soft); font-size: 11px; font-weight: 700; text-transform: uppercase; }
+    .label { margin: 14px 0 6px; color: var(--cp-success); font-family: Consolas, "Courier New", Courier, monospace; font-size: 11px; font-weight: 700; text-transform: uppercase; }
     .tags { display: flex; flex-wrap: wrap; gap: 6px; }
     .tag { padding: 4px 7px; border-radius: 0.625rem; background: var(--cp-surface-soft); color: var(--cp-text-muted); font-size: 11px; }
     .endpoint { display: block; overflow: hidden; color: var(--cp-link); font-family: Consolas, "Courier New", Courier, monospace; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
     .endpoint:hover { color: var(--cp-accent); }
     .hop-list { display: grid; gap: 8px; margin-top: 14px; }
     .hop { padding: 10px; background: var(--cp-surface-soft); border: 1px solid var(--cp-border); border-radius: 0.625rem; font-size: 12px; }
-    .hop strong { color: var(--cp-accent); }
+    .hop strong { color: var(--cp-warning); }
     @media (max-width: 900px) {
       .agent-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .result-grid { grid-template-columns: 1fr; }

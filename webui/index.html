@@ -118,6 +118,17 @@
     .primary:hover { background: var(--cp-accent-hover); }
     .primary:disabled { opacity: 0.55; cursor: wait; }
     .samples { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .mode-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .mode-label { margin-right: 4px; color: var(--cp-text-muted); font-size: 12px; font-weight: 700; }
+    .mode {
+      padding: 7px 10px;
+      color: var(--cp-text-muted);
+      background: var(--cp-surface);
+      border: 1px solid var(--cp-border);
+      font-size: 12px;
+    }
+    .mode.active { color: var(--cp-accent); background: var(--cp-accent-soft); border-color: var(--cp-accent); font-weight: 700; }
+    .mode:disabled { opacity: 0.5; cursor: not-allowed; }
     .sample {
       padding: 7px 10px;
       color: var(--cp-text-muted);
@@ -145,7 +156,11 @@
     .label { margin: 14px 0 6px; color: var(--cp-text-soft); font-size: 11px; font-weight: 700; text-transform: uppercase; }
     .tags { display: flex; flex-wrap: wrap; gap: 6px; }
     .tag { padding: 4px 7px; border-radius: 0.625rem; background: var(--cp-surface-soft); color: var(--cp-text-muted); font-size: 11px; }
-    .endpoint { overflow: hidden; color: var(--cp-link); font-family: Consolas, "Courier New", Courier, monospace; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+    .endpoint { display: block; overflow: hidden; color: var(--cp-link); font-family: Consolas, "Courier New", Courier, monospace; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+    .endpoint:hover { color: var(--cp-accent); }
+    .hop-list { display: grid; gap: 8px; margin-top: 14px; }
+    .hop { padding: 10px; background: var(--cp-surface-soft); border: 1px solid var(--cp-border); border-radius: 0.625rem; font-size: 12px; }
+    .hop strong { color: var(--cp-accent); }
     @media (max-width: 900px) {
       .agent-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .result-grid { grid-template-columns: 1fr; }
@@ -181,6 +196,13 @@
         <button class="sample" type="button">What is the latest compressor price?</button>
         <button class="sample" type="button">Has Falcon funding been approved?</button>
         <button class="sample" type="button">What is the status of Falcon?</button>
+        <button class="sample" type="button" data-mode="multi-hop">Contrast Falcon's compressor price with its cost variance.</button>
+      </div>
+      <div class="mode-row" aria-label="Routing mode">
+        <span class="mode-label">Mode</span>
+        <button class="mode active" type="button" data-mode="fast">Fast path · no LLM</button>
+        <button class="mode" type="button" data-mode="reasoned">Reasoned routing · LLM judge</button>
+        <button class="mode" type="button" data-mode="multi-hop">Multi-step · decompose + synthesize</button>
       </div>
     </section>
 
@@ -192,7 +214,7 @@
         <h2>Telemetry</h2>
         <div class="metrics">
           <div class="metric"><div class="metric-label">Routing time</div><div id="routing-time" class="metric-value">—</div></div>
-          <div class="metric"><div class="metric-label">A2A time</div><div id="a2a-time" class="metric-value">—</div></div>
+          <div class="metric"><div class="metric-label">Reasoning time</div><div id="reasoning-time" class="metric-value">—</div></div>
           <div class="metric"><div class="metric-label">Reasoning tokens</div><div id="tokens" class="metric-value">—</div></div>
           <div class="metric"><div class="metric-label">Routing outcome</div><div id="routing-outcome" class="metric-value">—</div></div>
         </div>
@@ -214,6 +236,8 @@
     const button = document.querySelector("#route-button");
     const resultPanel = document.querySelector("#result-panel");
     const agentGrid = document.querySelector("#agent-grid");
+    let selectedMode = "fast";
+    let reasoningAvailable = false;
 
     function addText(parent, className, text, tag = "div") {
       const element = document.createElement(tag);
@@ -235,15 +259,18 @@
         addText(card, "label", "Owns");
         const tags = addText(card, "tags", "");
         for (const item of agent.owns.slice(0, 5)) addText(tags, "tag", item, "span");
-        addText(card, "label", "A2A endpoint");
-        addText(card, "endpoint", agent.endpoint);
+        addText(card, "label", "A2A Agent Card");
+        const link = addText(card, "endpoint", agent.card_url, "a");
+        link.href = agent.card_url;
+        link.target = "_blank";
+        link.rel = "noreferrer";
         agentGrid.appendChild(card);
       }
     }
 
-    function selectAgent(agentId) {
+    function selectAgents(agentIds) {
       document.querySelectorAll(".agent-card").forEach((card) => {
-        card.classList.toggle("selected", card.dataset.agentId === agentId);
+        card.classList.toggle("selected", agentIds.includes(card.dataset.agentId));
       });
     }
 
@@ -254,19 +281,37 @@
       if (data.answer) addText(resultPanel, "answer", data.answer, "p");
       if (data.clarification) addText(resultPanel, "answer", data.clarification, "p");
       if (!data.answer && !data.clarification) addText(resultPanel, "muted", "No answer returned.", "p");
+      if (data.reasoning) addText(resultPanel, "muted", data.reasoning, "p");
+      if (data.hops) {
+        const hopList = addText(resultPanel, "hop-list", "");
+        for (const hop of data.hops) {
+          const hopElement = addText(hopList, "hop", "");
+          addText(hopElement, "", hop.agent || "Clarification required", "strong");
+          addText(hopElement, "", ` — ${hop.query}`, "span");
+        }
+      }
       document.querySelector("#routing-time").textContent = `${data.telemetry.routing_ms} ms`;
-      document.querySelector("#a2a-time").textContent = `${data.telemetry.a2a_ms} ms`;
+      document.querySelector("#reasoning-time").textContent = `${data.telemetry.reasoning_ms} ms`;
       document.querySelector("#tokens").textContent = String(data.telemetry.reasoning_tokens);
       document.querySelector("#routing-outcome").textContent = data.outcome;
-      selectAgent(data.selected_agent);
+      selectAgents(data.selected_agents);
     }
 
     async function loadAgents() {
       const response = await fetch("/api/agents");
       if (!response.ok) throw new Error("Could not load Agent Cards.");
       const data = await response.json();
+      reasoningAvailable = data.reasoning_available;
       renderAgents(data.agents);
-      document.querySelector("#status").textContent = `${data.agents.length} specialists indexed`;
+      document.querySelector("#status").textContent = data.reasoning_available
+        ? `${data.agents.length} specialists indexed · reasoning available`
+        : `${data.agents.length} specialists indexed · fast path`;
+      if (!data.reasoning_available) {
+        document.querySelectorAll('.mode:not([data-mode="fast"])').forEach((button) => {
+          button.disabled = true;
+          button.title = "Configure the Azure OpenAI reasoning deployment to enable this mode.";
+        });
+      }
     }
 
     async function routeQuery(event) {
@@ -277,7 +322,7 @@
         const response = await fetch("/api/query", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ query: input.value }),
+          body: JSON.stringify({ query: input.value, mode: selectedMode }),
         });
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || "Routing failed.");
@@ -287,7 +332,7 @@
         resultPanel.classList.remove("empty");
         addText(resultPanel, "outcome", "error");
         addText(resultPanel, "answer", error.message, "p");
-        selectAgent(null);
+        selectAgents([]);
       } finally {
         button.disabled = false;
         button.textContent = "Route query";
@@ -297,8 +342,19 @@
     document.querySelectorAll(".sample").forEach((sample) => {
       sample.addEventListener("click", () => {
         input.value = sample.textContent;
+        if (sample.dataset.mode) setMode(sample.dataset.mode);
         input.focus();
       });
+    });
+    function setMode(mode) {
+      if (mode !== "fast" && !reasoningAvailable) return;
+      selectedMode = mode;
+      document.querySelectorAll(".mode").forEach((button) => {
+        button.classList.toggle("active", button.dataset.mode === mode);
+      });
+    }
+    document.querySelectorAll(".mode").forEach((button) => {
+      button.addEventListener("click", () => setMode(button.dataset.mode));
     });
     form.addEventListener("submit", routeQuery);
     loadAgents().catch((error) => {

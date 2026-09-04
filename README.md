@@ -29,8 +29,9 @@ Or open the small browser UI:
 uv run router-web
 ```
 
-Then visit `http://127.0.0.1:8080`. The UI shows the Agent Cards, sample queries,
+Then visit `http://127.0.0.1:8080`. The UI shows the live Agent Cards, sample queries,
 routing outcome, latency and token telemetry, and highlights the selected specialist.
+It exposes fast deterministic, LLM-judged, and multi-step decomposition/synthesis modes.
 
 For a demo-friendly trace of the selection mechanism against Azure AI Search:
 

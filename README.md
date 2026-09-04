@@ -32,6 +32,8 @@ uv run router-web
 Then visit `http://127.0.0.1:8080`. The UI shows the live Agent Cards, sample queries,
 routing outcome, latency and token telemetry, and highlights the selected specialist.
 It exposes fast deterministic, LLM-judged, and multi-step decomposition/synthesis modes.
+When `infra/.deployment-outputs.json` exists, the UI automatically enables the two
+reasoning modes with the deployed Azure OpenAI endpoint.
 
 For a demo-friendly trace of the selection mechanism against Azure AI Search:
 

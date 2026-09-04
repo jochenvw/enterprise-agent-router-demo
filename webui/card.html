@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>A2A Agent Card</title>
+  <script>
+    (() => {
+      const param = new URLSearchParams(window.location.search).get("scoutTheme");
+      const theme =
+        param || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+      --cp-bg: #f7f4ef;
+      --cp-bg-elevated: #fcfbf8;
+      --cp-surface: #ffffff;
+      --cp-surface-soft: #f5f5f5;
+      --cp-border: #dedede;
+      --cp-border-strong: #919191;
+      --cp-text: #242424;
+      --cp-text-muted: #5c5c5c;
+      --cp-text-soft: #6f6f6f;
+      --cp-accent: #b11f4b;
+      --cp-accent-hover: #9a1a41;
+      --cp-accent-soft: rgba(177, 31, 75, 0.08);
+      --cp-accent-fg: #ffffff;
+      --cp-success: #16a34a;
+      --cp-danger: #dc2626;
+      --cp-warning: #f59e0b;
+      --cp-link: #0078d4;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+      --cp-overlay: rgba(255, 255, 255, 0.8);
+      --cp-panel: rgba(255, 255, 255, 0.86);
+      --cp-panel-strong: rgba(255, 255, 255, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.55);
+      --cp-highlight: rgba(177, 31, 75, 0.12);
+    }
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --cp-bg: #3d3b3a;
+      --cp-bg-elevated: #343231;
+      --cp-surface: #292929;
+      --cp-surface-soft: #2e2e2e;
+      --cp-border: #474747;
+      --cp-border-strong: #5f5f5f;
+      --cp-text: #dedede;
+      --cp-text-muted: #919191;
+      --cp-text-soft: #b0b0b0;
+      --cp-accent: #fd8ea1;
+      --cp-accent-hover: #fb7b91;
+      --cp-accent-soft: rgba(253, 142, 161, 0.14);
+      --cp-accent-fg: #1a1a1a;
+      --cp-success: #4ade80;
+      --cp-danger: #f87171;
+      --cp-warning: #fbbf24;
+      --cp-link: #4da6ff;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+      --cp-overlay: rgba(41, 41, 41, 0.88);
+      --cp-panel: rgba(41, 41, 41, 0.72);
+      --cp-panel-strong: rgba(41, 41, 41, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.04);
+      --cp-highlight: rgba(253, 142, 161, 0.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--cp-bg);
+      color: var(--cp-text);
+      font-family: "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    .shell { width: min(900px, calc(100% - 32px)); margin: 0 auto; padding: 40px 0 56px; }
+    a { color: var(--cp-link); }
+    .back { display: inline-block; margin-bottom: 20px; text-decoration: none; }
+    .eyebrow { color: var(--cp-accent); font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
+    h1 { margin: 8px 0; font-size: clamp(28px, 5vw, 42px); letter-spacing: -0.04em; }
+    h2 { margin: 0 0 12px; font-size: 18px; }
+    p { line-height: 1.55; }
+    .muted { color: var(--cp-text-muted); }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 24px; }
+    .panel {
+      padding: 20px;
+      background: var(--cp-surface);
+      border: 1px solid var(--cp-border);
+      border-radius: 16px;
+      box-shadow: var(--cp-shadow);
+    }
+    .wide { grid-column: 1 / -1; }
+    .facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .fact { padding: 12px; background: var(--cp-surface-soft); border: 1px solid var(--cp-border); border-radius: 0.625rem; }
+    .label { color: var(--cp-text-muted); font-size: 11px; font-weight: 700; text-transform: uppercase; }
+    .value { margin-top: 5px; overflow-wrap: anywhere; font-family: Consolas, "Courier New", Courier, monospace; font-size: 13px; }
+    .skill { padding: 14px 0; border-top: 1px solid var(--cp-border); }
+    .skill:first-of-type { border-top: 0; }
+    .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .tag { padding: 4px 7px; color: var(--cp-text-muted); background: var(--cp-surface-soft); border-radius: 0.625rem; font-size: 11px; }
+    ul { margin-bottom: 0; padding-left: 20px; color: var(--cp-text-muted); }
+    li { margin: 6px 0; }
+    details { margin-top: 16px; }
+    summary { color: var(--cp-link); cursor: pointer; }
+    pre { overflow: auto; padding: 14px; background: var(--cp-bg-elevated); border: 1px solid var(--cp-border); border-radius: 0.625rem; font-family: Consolas, "Courier New", Courier, monospace; font-size: 11px; white-space: pre-wrap; }
+    @media (max-width: 680px) {
+      .grid, .facts { grid-template-columns: 1fr; }
+      .wide { grid-column: auto; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <a class="back" href="/">← Back to router</a>
+    <div id="content">
+      <div class="eyebrow">A2A Agent Card</div>
+      <h1>Loading…</h1>
+    </div>
+  </main>
+  <script>
+    const agentId = location.pathname.split("/").filter(Boolean).at(-1);
+    const content = document.querySelector("#content");
+
+    function addText(parent, className, text, tag = "div") {
+      const element = document.createElement(tag);
+      element.className = className;
+      element.textContent = text;
+      parent.appendChild(element);
+      return element;
+    }
+
+    function render(card) {
+      content.replaceChildren();
+      addText(content, "eyebrow", "A2A Agent Card");
+      addText(content, "", card.name || agentId, "h1");
+      addText(content, "muted", card.description || "No description provided.", "p");
+
+      const grid = addText(content, "grid", "");
+      const overview = addText(grid, "panel wide", "");
+      addText(overview, "", "Protocol details", "h2");
+      const facts = addText(overview, "facts", "");
+      const interfaceInfo = (card.supportedInterfaces || [])[0] || {};
+      for (const [label, value] of [
+        ["Version", card.version || "—"],
+        ["Protocol", interfaceInfo.protocolBinding || "JSON-RPC"],
+        ["Endpoint", interfaceInfo.url || "—"],
+      ]) {
+        const fact = addText(facts, "fact", "");
+        addText(fact, "label", label);
+        addText(fact, "value", value);
+      }
+
+      const skills = addText(grid, "panel wide", "");
+      addText(skills, "", "Declared skills", "h2");
+      for (const skill of card.skills || []) {
+        const section = addText(skills, "skill", "");
+        addText(section, "", skill.name || skill.id, "h3");
+        addText(section, "muted", skill.description || "", "p");
+        const tags = addText(section, "tags", "");
+        for (const tag of skill.tags || []) addText(tags, "tag", tag, "span");
+        if (skill.examples?.length) {
+          addText(section, "label", "Example questions");
+          const list = addText(section, "", "", "ul");
+          for (const example of skill.examples) addText(list, "", example, "li");
+        }
+      }
+
+      const details = document.createElement("details");
+      const summary = addText(details, "", "View raw protocol document", "summary");
+      summary.setAttribute("aria-label", "View raw protocol document");
+      addText(details, "", JSON.stringify(card, null, 2), "pre");
+      content.appendChild(details);
+    }
+
+    fetch(`/api/agent-card/${encodeURIComponent(agentId)}`)
+      .then((response) => {
+        if (!response.ok) throw new Error("Could not load this live Agent Card.");
+        return response.json();
+      })
+      .then(render)
+      .catch((error) => {
+        content.replaceChildren();
+        addText(content, "eyebrow", "A2A Agent Card");
+        addText(content, "", "Card unavailable", "h1");
+        addText(content, "muted", error.message, "p");
+      });
+  </script>
+</body>
+</html>

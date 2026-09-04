@@ -6,6 +6,7 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from pathlib import Path
 
+import httpx
 import uvicorn
 from starlette.applications import Starlette
 from starlette.requests import Request
@@ -28,6 +29,7 @@ AGENT_IDS = (
     "investment-planning",
     "consulting",
 )
+REPO_ROOT = Path(__file__).resolve().parent.parent
 
 
 def _agent_card(definition: AgentDefinition) -> dict[str, object]:
@@ -39,7 +41,8 @@ def _agent_card(definition: AgentDefinition) -> dict[str, object]:
         "boundaries": sorted({phrase for skill in definition.skills for phrase in skill.does_not_own}),
         "examples": [example for skill in definition.skills for example in skill.examples][:3],
         "endpoint": f"http://localhost:{definition.port}/a2a",
-        "card_url": f"http://localhost:{definition.port}/.well-known/agent-card.json",
+        "card_url": f"/cards/{definition.id}",
+        "live_card_url": f"http://localhost:{definition.port}/.well-known/agent-card.json",
     }
 
 
@@ -51,8 +54,25 @@ def reasoning_available() -> bool:
     return bool(os.getenv("AZURE_OPENAI_ENDPOINT") and os.getenv("AZURE_OPENAI_REASONING_DEPLOYMENT"))
 
 
+def load_reasoning_config() -> None:
+    outputs_path = REPO_ROOT / "infra" / ".deployment-outputs.json"
+    if os.getenv("AZURE_OPENAI_ENDPOINT") or not outputs_path.exists():
+        return
+
+    outputs = json.loads(outputs_path.read_text(encoding="utf-8"))
+    endpoint = outputs.get("openaiEndpoint", {}).get("value")
+    if endpoint:
+        os.environ["AZURE_OPENAI_ENDPOINT"] = endpoint
+        os.environ.setdefault("AZURE_OPENAI_REASONING_DEPLOYMENT", "gpt-5.4-nano")
+        os.environ.setdefault("AZURE_OPENAI_API_VERSION", "2024-10-21")
+
+
 async def homepage(_: Request) -> FileResponse:
     return FileResponse(Path(__file__).with_name("index.html"))
+
+
+async def card_page(_: Request) -> FileResponse:
+    return FileResponse(Path(__file__).with_name("card.html"))
 
 
 async def agents(_: Request) -> JSONResponse:
@@ -62,6 +82,19 @@ async def agents(_: Request) -> JSONResponse:
             "reasoning_available": reasoning_available(),
         }
     )
+
+
+async def agent_card(request: Request) -> JSONResponse:
+    agent_id = request.path_params["agent_id"]
+    if agent_id not in AGENT_IDS:
+        return JSONResponse({"error": f"Unknown agent: {agent_id}"}, status_code=404)
+
+    definition = load_agent(agent_id)
+    url = f"http://localhost:{definition.port}/.well-known/agent-card.json"
+    async with httpx.AsyncClient(timeout=10.0) as client:
+        response = await client.get(url)
+        response.raise_for_status()
+    return JSONResponse(response.json())
 
 
 def _answer_text(raw_answer: str) -> str:
@@ -209,6 +242,7 @@ async def query(request: Request) -> JSONResponse:
 
 @asynccontextmanager
 async def lifespan(application: Starlette) -> AsyncIterator[None]:
+    load_reasoning_config()
     embedder = create_embedder()
     application.state.router = CapabilityRouter(create_store(embedder.dimensions), embedder)
     yield
@@ -217,7 +251,9 @@ async def lifespan(application: Starlette) -> AsyncIterator[None]:
 app = Starlette(
     routes=[
         Route("/", homepage),
+        Route("/cards/{agent_id}", card_page),
         Route("/api/agents", agents),
+        Route("/api/agent-card/{agent_id}", agent_card),
         Route("/api/query", query, methods=["POST"]),
     ],
     lifespan=lifespan,

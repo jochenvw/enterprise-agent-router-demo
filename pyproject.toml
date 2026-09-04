@@ -32,13 +32,14 @@ index-agents = "registry.index_agents:main"
 route-query = "orchestrator.cli:main"
 route-query-batch = "orchestrator.cli:main_batch"
 eval-router = "evals.run_router:main"
+router-web = "webui.server:main"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["agents", "orchestrator", "registry", "shared", "evals"]
+packages = ["agents", "orchestrator", "registry", "shared", "evals", "webui"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

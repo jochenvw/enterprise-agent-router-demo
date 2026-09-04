@@ -23,6 +23,15 @@ uv run route-query "What's the status of Falcon?"
 uv run eval-router
 ```
 
+Or open the small browser UI:
+
+```powershell
+uv run router-web
+```
+
+Then visit `http://127.0.0.1:8080`. The UI shows the Agent Cards, sample queries,
+routing outcome, latency and token telemetry, and highlights the selected specialist.
+
 For a demo-friendly trace of the selection mechanism against Azure AI Search:
 
 ```powershell
